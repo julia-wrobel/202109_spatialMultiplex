@@ -1,3 +1,4 @@
+ls
 # 202109_spatialMultiplex
 
 ## Purpose
@@ -21,6 +22,5 @@ implement the analyses for the project.
 * `notes/` will contain meeting notes, ideas, and lists of references
 * `data/` will either be a symbolic link to an external data directory, or
 a subdirectory
-* `source/` will contain bare scripts (typically containing functions sourced
-by the full analysis files)
+* `source/` will contain bare scripts (like wrapper functions for different multiplex imaging platforms)
 
