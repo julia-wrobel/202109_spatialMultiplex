@@ -1,4 +1,3 @@
-ls
 # 202109_spatialMultiplex
 
 ## Purpose
