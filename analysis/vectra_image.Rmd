@@ -41,7 +41,7 @@ theme_set(theme_bw() + theme(legend.position = "bottom"))
 
 # Load Filepaths
 
-These images come from a lung cancer dataset with a published analysis [here](). There are roughly 132 subjects and each subjects have 3-5 images. 
+There are roughly 132 subjects and each subjects have 3-5 images. Only one image (there are multiple tiff files for the one image) from one subject is listed here.
 
 The are collected on a Vectra instrument. Cell and tissue segmentation and cell phenotyping were performed using Inform software. For each image, there are multiple Tiff files:
 
