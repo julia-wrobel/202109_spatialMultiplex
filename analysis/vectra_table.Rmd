@@ -1,0 +1,67 @@
+---
+title: "Loading and Visualizing Vectra-Polaris Images"
+hitheme: tomorrow
+output:
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+highlighter: highlight.js
+---
+
+# Overview
+
+Below I load processed data from a Vectra instrument. We are looking at a tissue slice from a patient with lung cancer. Paper reference [here](https://www.biorxiv.org/content/biorxiv/early/2021/02/25/2021.02.24.432729.full.pdf).
+
+The original analysis has 132 subjects with 3-5 images each. The dataset loaded has just one subject and three images.
+
+```{r setup, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(here)
+library(phenoptr)
+
+knitr::opts_chunk$set(echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 8,
+  fig.height = 6
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+
+
+```
+
+# Load Filepaths
+
+These images come from a lung cancer dataset with a published analysis [here](). There are roughly 132 subjects and each subjects have 3-5 images. 
+
+The are collected on a Vectra instrument. Cell and tissue segmentation and cell phenotyping were performed using Inform software. For each image, there are multiple Tiff files:
+
+
+* `*component_data.tif`: the multichannel file we are most interested in
+* `*binary_sig*`: 3 channel file with binary segmentation maps
+* `"subject_id".tif`: A composite image in RGB format. Makes pretty pictures.
+
+```{r}
+## load data
+load(here("data", "vectra_table.Rdata"))
+
+```
+
+Unique images in the dataset:
+
+```{r}
+unique(vectra_table$`Sample Name`)
+```
+
+There are five images combined for this one subject.
+
+
+# Analysis
+I will add more simple analysis / visualization here
