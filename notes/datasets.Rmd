@@ -1,0 +1,38 @@
+---
+title: "Datasets and platform"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview 
+
+This document compares the types of data platforms, and links to where data of certain types can be found.
+
+
+Platform/Brand | Generic  | Number of markers      | Resolution | Single Stain
+------- | ---------------- | ---------- | ---------| ---------:
+Vectra 3    | mIF? | 6-8 | ? |?
+Vectra Polaris  | mIF?       | 6-8       | ? | yes
+multiplex immunofluorescence  | mxIF        | 40+       | ? | no
+CODEX   | ? | 40+      | ? | ?
+IMC   | ? | ?      | ? | ?
+
+
+
+* CODEX: single-cell resolution down to 600 nm or 250 nm depending on microscope objective used (20X and 40X respectively)
+
+# data links
+
+* [HuBMAP: dataset portal for human biomolecular atlast program](https://portal.hubmapconsortium.org/search?entity_type[0]=Dataset)
+  * open source CODEX, IMC datasets
+* [Vectra-Polaris data](https://github.com/akoyabio/phenoptrExamples)
+* [MIBI data](https://www.angelolab.com/mibi-data)
+  * This data has been processed (not the raw images) and is from the [this published paper](https://www.cell.com/cell/fulltext/S0092-8674(18)31100-0)
+  
+  
+
