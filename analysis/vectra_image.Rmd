@@ -6,10 +6,6 @@ output:
     code_folding: hide
     toc: yes
     toc_float: yes
-  pdf_document:
-    toc: yes
-  word_document:
-    toc: yes
 highlighter: highlight.js
 ---
 

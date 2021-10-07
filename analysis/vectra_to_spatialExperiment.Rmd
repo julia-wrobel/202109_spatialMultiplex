@@ -1,0 +1,43 @@
+---
+title: "Converting Vectra data to spatialExperiment Objects"
+hitheme: tomorrow
+output:
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_float: yes
+highlighter: highlight.js
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview 
+
+This document provides info on how to convert Vectra data into a `spatialExperiment` object.
+
+* Should have conversion functions for `tiff` files and `.txt` tabular data
+
+
+## Correspondence between ST and MI
+
+The `spatialExperiment` object has a particular structure. Here I explain the correspondence between `spatialExperiment` slots for typical ST data, and how we expect it to behave for MI data.
+
+
+* `assays`: contains expression counts
+  * columns: cells
+  * rows: genes
+  * In our case, columns are cells and rows are markers
+    * assays contains mean/median expression values for each marker and each cell
+* `rowData`: "feature metadata". What does this mean??
+  * For us, this would contain information about markers... maybe marker type (phenotypic vs. functional)?
+
+## Tabular data
+
+  
+
+## Images
+
+
