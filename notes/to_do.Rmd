@@ -13,9 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 * Learn about `spatialExperiment` 
   * Go through [this textbook](https://lmweber.org/OSTA-book/spatialexperiment.html)
-  * Chapter 1
-  * Chapter 2
-  * Chapter 3
   * Chapter 4
   * Chapter 5
   * Chapter 6
@@ -52,7 +49,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Recently completed
 
-
+* Learn about `spatialExperiment` 
+  * Go through [this textbook](https://lmweber.org/OSTA-book/spatialexperiment.html)
+  * Chapter 1
+  * Chapter 2
+  * Chapter 3
+  
 ## Ongoing questions
 
 * Types of Bioconductor packages include: analysis software packages, annotation packages, data packages, workflow packages, online books
@@ -60,13 +62,17 @@ knitr::opts_chunk$set(echo = TRUE)
   * Is `spatialExperiment` a workflow package?
 * When creating a data package, would it be best to have data from one platform (just Vectra) or from multiple platforms?
 * What software do you use to make the pretty figures?
-
+* Why is `spatialCoords` its own slot rather than being a `colData` variable? is this because it was built on top of `singleCellExperiment`? Does having its own slot add functionality?
+* Did you (Lukas) right the whole spatial transcriptomics book yourself?
+  * Including the preprocessing steps section?
 
 ## About spatial transcriptomics
 
 * What is a molecule?
+* How many genes are there typically in an ST experiment?
 * From a data structure perspective, what are the differences between spatial transcriptomics and multiplex single cell imaging?
   * ST doesn't have single cell masks, right?
   * ST is wayyy more multiplex in the sense that there are hundreds if not thousands of genes
   * ST has counts and MI has continuous marker intensities
     * Are there "intensities" at all for ST?
+

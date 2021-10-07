@@ -31,8 +31,14 @@ The `spatialExperiment` object has a particular structure. Here I explain the co
   * rows: genes
   * In our case, columns are cells and rows are markers
     * assays contains mean/median expression values for each marker and each cell
+    * What types of assays would be useful for our data?
 * `rowData`: "feature metadata". What does this mean??
   * For us, this would contain information about markers... maybe marker type (phenotypic vs. functional)?
+* `colData`: contains info about cells
+  * For us this is phenotype, tissue area, cell shape, cell min/max axis, etc
+* `spatialCoords`: stores spatial coordinates
+* `imgData`: contains image data. Our images might be too big for this.
+
 
 ## Tabular data
 
