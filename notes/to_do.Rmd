@@ -13,9 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 * Learn about `spatialExperiment` 
   * Go through [this textbook](https://lmweber.org/OSTA-book/spatialexperiment.html)
-  * Chapter 4
-  * Chapter 5
-  * Chapter 6
   * Chapter 7
   * Chapter 8
   * Read [bioarxiv paper](https://www.biorxiv.org/content/10.1101/2021.01.27.428431v2)
@@ -37,15 +34,18 @@ knitr::opts_chunk$set(echo = TRUE)
   * Think about which dataset you would want to turn into a package
   * Go through [guidelines](https://bioconductor.org/packages/release/bioc/vignettes/AnnotationHub/inst/doc/CreateAHubPackage.html) on how to create ExperimentHub package
 
-* Put Simon's mIF data in `data` folder
-  * Do brief exploratory analysis
-  * Add this data to datasets document
-  * Work towards making this compatible with Spatial Experiment
+* Data
+  * TNBC MIBI data
+  * Put Simon's mIF data in `data` folder
+    * Do brief exploratory analysis
+    * Add this data to datasets document
+    * Work towards making this compatible with Spatial Experiment
 
+ 
 
-* Spatial proteomics
-  * Look for existing packages 
+* CRAN task view on single cell imaging data
   * http://bioconductor.org/packages/release/bioc/html/pRoloc.html
+  * https://cran.r-project.org/web/packages/spatialTIME/index.html
 
 ## Recently completed
 
@@ -54,20 +54,31 @@ knitr::opts_chunk$set(echo = TRUE)
   * Chapter 1
   * Chapter 2
   * Chapter 3
-  
+  * Chapter 4
+  * Chapter 5
+  * Chapter 6
+ 
+## Ideas
+
+* `MultiplexUtils` package to store the multiplex conversion functions?
+* Call multiplex data package MIexampleData
+
 ## Ongoing questions
 
 * Types of Bioconductor packages include: analysis software packages, annotation packages, data packages, workflow packages, online books
   * What are each of these?
   * Is `spatialExperiment` a workflow package?
 * When creating a data package, would it be best to have data from one platform (just Vectra) or from multiple platforms?
+  * Contains Visium and seqFISH data
 * What software do you use to make the pretty figures?
 * Why is `spatialCoords` its own slot rather than being a `colData` variable? is this because it was built on top of `singleCellExperiment`? Does having its own slot add functionality?
 * Did you (Lukas) right the whole spatial transcriptomics book yourself?
   * Including the preprocessing steps section?
+* What is the purpose of the `DropletUtils` package? What is Droplet data?
 
-## About spatial transcriptomics
+### About spatial transcriptomics
 
+* Can `VistoSeg` be used to count/summarize the pixels in a cell?
 * What is a molecule?
 * How many genes are there typically in an ST experiment?
 * From a data structure perspective, what are the differences between spatial transcriptomics and multiplex single cell imaging?
@@ -76,3 +87,20 @@ knitr::opts_chunk$set(echo = TRUE)
   * ST has counts and MI has continuous marker intensities
     * Are there "intensities" at all for ST?
 
+### About read10xVisium.R
+
+* Is it ok for the image data argument to be empty?
+* Does it all the types of files at once?
+  * Can you explain the expected file structure a little bit?
+
+### Angie questions
+
+* What is the file structure for typical Vectra data after Inform processing? 
+* How challenging is it to get the .tiff images?
+* How are file names / ids set up for the Vectra instrument?
+* What image preprocessing occurs before Inform?
+* Data dictionary somewhere?
+  * What is the "Confidence" column for Vectra data?
+  * What are the TMA Sector/Row/Column/Field variables?
+  * Are column names consistent for each analysis?
+  

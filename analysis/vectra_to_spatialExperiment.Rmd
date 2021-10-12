@@ -31,19 +31,91 @@ The `spatialExperiment` object has a particular structure. Here I explain the co
   * rows: genes
   * In our case, columns are cells and rows are markers
     * assays contains mean/median expression values for each marker and each cell
+    * Generally we have mean at the total cell, membrane, and nuclei level. Do we want to store this data in wide form (all in the assays) or long form? I think wide.
     * What types of assays would be useful for our data?
-* `rowData`: "feature metadata". What does this mean??
+      * Maybe an assay for nuclei, assay for total cells, assay for membrane?
+      * Ask Cole how he applies his method and what the data structure is
+* `rowData`: "feature metadata"
   * For us, this would contain information about markers... maybe marker type (phenotypic vs. functional)?
 * `colData`: contains info about cells
-  * For us this is phenotype, tissue area, cell shape, cell min/max axis, etc
+  * For us this is phenotype, tissue category, cell shape, cell min/max axis, etc
 * `spatialCoords`: stores spatial coordinates
 * `imgData`: contains image data. Our images might be too big for this.
 
 
 ## Tabular data
 
+
+
+```{r}
+#library(phenoptr)
+library(tidyverse)
+library(SpatialExperiment)
+
+path = here::here("data", "tabular", "#16 3-171-807_[47172,14046]_cell_seg_data.txt")
+
+# clean names but store original colnames so they can be used downstream with phenoptr
+# load optionally with phenoptr, if phenoptr not installed (have it in suggests) load with 
+if(require(phenoptr)){df = read_cell_seg_data(path) 
+}else{
+  library(vroom)
+  df = vroom(path, col_names = TRUE)
+  colnames(df) = sub(pattern = " \\(Normalized Counts, Total Weighting\\)", "",
+                     colnames(df))
+}
+
+df = janitor::clean_names(df)
+
+# grep for things you want using regular expressions
+assay_vars = c(#"sample_name",  "slide_id",
+               names(df)[grep(") min|max|mean|std_dev|total", names(df))] 
+               )
+colData_vars = c("cell_id", "tissue_category", "slide_id",
+                 names(df)[grep("area|phenotype|axis|compactness", names(df))] )
+
+spatial_vars = c("cell_x_position", "cell_y_position" )
+
+
+# make into spe object
+spe = SpatialExperiment(
+  assays = list(
+    counts = t(as.matrix(subset(df, select = assay_vars)))
+  ),
+  sample_id = df$sample_name,
+  colData = DataFrame(subset(df, select = colData_vars)),
+  spatialData=DataFrame(subset(df, select = spatial_vars)),
+  spatialCoordsNames = spatial_vars
+)
+```
   
 
 ## Images
 
 
+
+## Questions
+
+* What if I want to add in clinical data?
+* Do we need to call assay 'counts' or do we want to call it something else?
+* What goes in `assays`? Min, mean, max, std dev, total all together or each as a separate assay?
+  * See how Cole uses this information
+* Where are IDs stored? Does downstream manipulation seem to work?
+* What is the unique image ID? Slide ID? Patient ID? are these consistent across Vectra datasets?   
+
+## To Do
+
+* Add rownames with subject-image-cell-id identifier
+* Decide where to put "other" variables like distances, and nearest neighbor distances as well if calculated
+
+```{r, echo = TRUE, eval = FALSE}
+# put the distance from tissue category edge in spatial vars?
+# maybe another assay?
+other = c("Category Region ID", "Distance from Tissue Category Edge (microns)",
+            )
+```
+
+* Add image data?
+* Add examples with clinical data?
+* We may need to convert area characteristics from pixels to microns
+  * See `phenoptr::read_cell_seg_data()` about this
+  
