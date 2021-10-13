@@ -11,7 +11,8 @@ highlighter: highlight.js
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      include = FALSE)
 ```
 
 ## Overview 
@@ -43,55 +44,42 @@ The `spatialExperiment` object has a particular structure. Here I explain the co
 * `imgData`: contains image data. Our images might be too big for this.
 
 
-## Tabular data
+## Convert `txt` to `spe`
 
 
+I wrote a function called `readVectraTable.R` for converting Vectra `.txt` data to an `spe` object. You provide the function with a directory that has one or multiple `.txt` files from a Vectra instrument and combines into one `spe` object.
 
-```{r}
-#library(phenoptr)
+* Need to assess if I should change what is stored in `assays`.
+
+### Lung cancer data
+
+This is a subset of the data from [Johnson et. al.](https://www.semanticscholar.org/paper/Cancer-cell-specific-MHCII-expression-as-a-of-the-Johnson-Boland/310b4eb9d9fe2ec2254004e0780c4b722ba1fe5d).
+
+```{r, echo = TRUE}
 library(tidyverse)
 library(SpatialExperiment)
 
-path = here::here("data", "tabular", "#16 3-171-807_[47172,14046]_cell_seg_data.txt")
-
-# clean names but store original colnames so they can be used downstream with phenoptr
-# load optionally with phenoptr, if phenoptr not installed (have it in suggests) load with 
-if(require(phenoptr)){df = read_cell_seg_data(path) 
-}else{
-  library(vroom)
-  df = vroom(path, col_names = TRUE)
-  colnames(df) = sub(pattern = " \\(Normalized Counts, Total Weighting\\)", "",
-                     colnames(df))
-}
-
-df = janitor::clean_names(df)
-
-# grep for things you want using regular expressions
-assay_vars = c(#"sample_name",  "slide_id",
-               names(df)[grep(") min|max|mean|std_dev|total", names(df))] 
-               )
-colData_vars = c("cell_id", "tissue_category", "slide_id",
-                 names(df)[grep("area|phenotype|axis|compactness", names(df))] )
-
-spatial_vars = c("cell_x_position", "cell_y_position" )
+source(here::here("source", "readVectraTable.R"))
 
 
-# make into spe object
-spe = SpatialExperiment(
-  assays = list(
-    counts = t(as.matrix(subset(df, select = assay_vars)))
-  ),
-  sample_id = df$sample_name,
-  colData = DataFrame(subset(df, select = colData_vars)),
-  spatialData=DataFrame(subset(df, select = spatial_vars)),
-  spatialCoordsNames = spatial_vars
-)
+spe = readVectraTable(sample_path = here::here("data", "tabular"),
+                clean_names = TRUE)
 ```
-  
 
-## Images
+### Phenoptr data
+
+This data is available in the [`phenoptrExamples` package](https://akoyabio.github.io/phenoptrExamples/index.html) from Akoya Biosciences. Nine images taken from three samples of (also) lung cancer tissue.
+
+```{r}
+path <- system.file("extdata", "samples", package = "phenoptrExamples")
+
+spe_phenoptr = readVectraTable(sample_path = path)
+```
 
 
+## Downstream Analysis
+
+Do some downstream analysis already possible with the `SpatialExperiment` package.
 
 ## Questions
 
@@ -119,3 +107,7 @@ other = c("Category Region ID", "Distance from Tissue Category Edge (microns)",
 * We may need to convert area characteristics from pixels to microns
   * See `phenoptr::read_cell_seg_data()` about this
   
+
+### Images
+
+I plan to write a function to convert images and segmentations to tabular format. Images might be too large for storage as part of a spatial experiment object.

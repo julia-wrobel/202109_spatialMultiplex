@@ -294,140 +294,24 @@ div.tocify {
 <li><code>imgData</code>: contains image data. Our images might be too big for this.</li>
 </ul>
 </div>
-<div id="tabular-data" class="section level2">
-<h2>Tabular data</h2>
-<pre class="r"><code>#library(phenoptr)
-library(tidyverse)
-library(SpatialExperiment)</code></pre>
-<pre><code>## Loading required package: SingleCellExperiment</code></pre>
-<pre><code>## Loading required package: SummarizedExperiment</code></pre>
-<pre><code>## Loading required package: MatrixGenerics</code></pre>
-<pre><code>## Warning: package &#39;MatrixGenerics&#39; was built under R version 4.1.1</code></pre>
-<pre><code>## Loading required package: matrixStats</code></pre>
-<pre><code>## 
-## Attaching package: &#39;matrixStats&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     count</code></pre>
-<pre><code>## 
-## Attaching package: &#39;MatrixGenerics&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:matrixStats&#39;:
-## 
-##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
-##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
-##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
-##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
-##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
-##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
-##     colWeightedMeans, colWeightedMedians, colWeightedSds,
-##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
-##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
-##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
-##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
-##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
-##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
-##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
-##     rowWeightedSds, rowWeightedVars</code></pre>
-<pre><code>## Loading required package: GenomicRanges</code></pre>
-<pre><code>## Loading required package: stats4</code></pre>
-<pre><code>## Loading required package: BiocGenerics</code></pre>
-<pre><code>## Loading required package: parallel</code></pre>
-<pre><code>## 
-## Attaching package: &#39;BiocGenerics&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
-## 
-##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
-##     clusterExport, clusterMap, parApply, parCapply, parLapply,
-##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
-<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
-## 
-##     combine, intersect, setdiff, union</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     IQR, mad, sd, var, xtabs</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
-##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
-##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
-##     union, unique, unsplit, which.max, which.min</code></pre>
-<pre><code>## Loading required package: S4Vectors</code></pre>
-<pre><code>## Warning: package &#39;S4Vectors&#39; was built under R version 4.1.1</code></pre>
-<pre><code>## 
-## Attaching package: &#39;S4Vectors&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
-## 
-##     first, rename</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     expand</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     expand.grid, I, unname</code></pre>
-<pre><code>## Loading required package: IRanges</code></pre>
-<pre><code>## 
-## Attaching package: &#39;IRanges&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
-## 
-##     collapse, desc, slice</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     reduce</code></pre>
-<pre><code>## Loading required package: GenomeInfoDb</code></pre>
-<pre><code>## Warning: package &#39;GenomeInfoDb&#39; was built under R version 4.1.1</code></pre>
-<pre><code>## Loading required package: Biobase</code></pre>
-<pre><code>## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with
-##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
-##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
-<pre><code>## 
-## Attaching package: &#39;Biobase&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:MatrixGenerics&#39;:
-## 
-##     rowMedians</code></pre>
-<pre><code>## The following objects are masked from &#39;package:matrixStats&#39;:
-## 
-##     anyMissing, rowMedians</code></pre>
-<pre class="r"><code>path = here::here(&quot;data&quot;, &quot;tabular&quot;, &quot;#16 3-171-807_[47172,14046]_cell_seg_data.txt&quot;)
-
-# clean names but store original colnames so they can be used downstream with phenoptr
-# load optionally with phenoptr, if phenoptr not installed (have it in suggests) load with 
-if(require(phenoptr)){df = read_cell_seg_data(path) 
-}else{
-  library(vroom)
-  df = vroom(path, col_names = TRUE)
-  colnames(df) = sub(pattern = &quot; \\(Normalized Counts, Total Weighting\\)&quot;, &quot;&quot;,
-                     colnames(df))
-}</code></pre>
-<pre><code>## Loading required package: phenoptr</code></pre>
-<pre class="r"><code>df = janitor::clean_names(df)
-
-# grep for things you want using regular expressions
-assay_vars = c(#&quot;sample_name&quot;,  &quot;slide_id&quot;,
-               names(df)[grep(&quot;) min|max|mean|std_dev|total&quot;, names(df))] 
-               )
-colData_vars = c(&quot;cell_id&quot;, &quot;tissue_category&quot;, &quot;slide_id&quot;,
-                 names(df)[grep(&quot;area|phenotype|axis|compactness&quot;, names(df))] )
-
-spatial_vars = c(&quot;cell_x_position&quot;, &quot;cell_y_position&quot; )
-
-
-# make into spe object
-spe = SpatialExperiment(
-  assays = list(
-    counts = t(as.matrix(subset(df, select = assay_vars)))
-  ),
-  sample_id = df$sample_name,
-  colData = DataFrame(subset(df, select = colData_vars)),
-  spatialData=DataFrame(subset(df, select = spatial_vars)),
-  spatialCoordsNames = spatial_vars
-)</code></pre>
+<div id="convert-txt-to-spe" class="section level2">
+<h2>Convert <code>txt</code> to <code>spe</code></h2>
+<p>I wrote a function called <code>readVectraTable.R</code> for converting Vectra <code>.txt</code> data to an <code>spe</code> object. You provide the function with a directory that has one or multiple <code>.txt</code> files from a Vectra instrument and combines into one <code>spe</code> object.</p>
+<ul>
+<li>Need to assess if I should change what is stored in <code>assays</code>.</li>
+</ul>
+<div id="lung-cancer-data" class="section level3">
+<h3>Lung cancer data</h3>
+<p>This is a subset of the data from (Johnson et. al.)[<a href="https://www.semanticscholar.org/paper/Cancer-cell-specific-MHCII-expression-as-a-of-the-Johnson-Boland/310b4eb9d9fe2ec2254004e0780c4b722ba1fe5d" class="uri">https://www.semanticscholar.org/paper/Cancer-cell-specific-MHCII-expression-as-a-of-the-Johnson-Boland/310b4eb9d9fe2ec2254004e0780c4b722ba1fe5d</a>].</p>
 </div>
-<div id="images" class="section level2">
-<h2>Images</h2>
+<div id="phenoptr-data" class="section level3">
+<h3>Phenoptr data</h3>
+<p>This data is available in the phenoptr package from Akoya Biosciences. Nine images taken from three samples of (also) lung cancer tissue.</p>
+</div>
+</div>
+<div id="downstream-analysis" class="section level2">
+<h2>Downstream Analysis</h2>
+<p>Do some downstream analysis already possible with the <code>SpatialExperiment</code> package.</p>
 </div>
 <div id="questions" class="section level2">
 <h2>Questions</h2>
@@ -445,21 +329,19 @@ spe = SpatialExperiment(
 <div id="to-do" class="section level2">
 <h2>To Do</h2>
 <ul>
-<li>Add rownames with subject-image-cell-id identifier</li>
-<li>Decide where to put “other” variables like distances, and nearest neighbor distances as well if calculated</li>
-</ul>
-<pre class="r"><code># put the distance from tissue category edge in spatial vars?
-# maybe another assay?
-other = c(&quot;Category Region ID&quot;, &quot;Distance from Tissue Category Edge (microns)&quot;,
-            )</code></pre>
-<ul>
-<li>Add image data?</li>
-<li>Add examples with clinical data?</li>
-<li>We may need to convert area characteristics from pixels to microns
+<li><p>Add rownames with subject-image-cell-id identifier</p></li>
+<li><p>Decide where to put “other” variables like distances, and nearest neighbor distances as well if calculated</p></li>
+<li><p>Add image data?</p></li>
+<li><p>Add examples with clinical data?</p></li>
+<li><p>We may need to convert area characteristics from pixels to microns</p>
 <ul>
 <li>See <code>phenoptr::read_cell_seg_data()</code> about this</li>
 </ul></li>
 </ul>
+<div id="images" class="section level3">
+<h3>Images</h3>
+<p>I plan to write a function to convert images and segmentations to tabular format. Images might be too large for storage as part of a spatial experiment object.</p>
+</div>
 </div>
 
 
