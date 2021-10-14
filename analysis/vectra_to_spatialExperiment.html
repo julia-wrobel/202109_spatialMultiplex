@@ -260,25 +260,27 @@ div.tocify {
 <h2>Overview</h2>
 <p>This document provides info on how to convert Vectra data into a <code>spatialExperiment</code> object.</p>
 <ul>
-<li>Should have conversion functions for <code>tiff</code> files and <code>.txt</code> tabular data</li>
+<li>Should have conversion functions for <code>.tiff</code> files and <code>.txt</code> tabular data
+<ul>
+<li>only <code>.txt</code> currently implemented</li>
+</ul></li>
 </ul>
 </div>
 <div id="correspondence-between-st-and-mi" class="section level2">
 <h2>Correspondence between ST and MI</h2>
-<p>The <code>spatialExperiment</code> object has a particular structure. Here I explain the correspondence between <code>spatialExperiment</code> slots for typical ST data, and how we expect it to behave for MI data.</p>
+<p>Here I explain the correspondence between <code>spatialExperiment</code> slots for typical ST data, and how we expect it to behave for *multiplex imaging (MI) data.</p>
 <ul>
 <li><code>assays</code>: contains expression counts
 <ul>
 <li>columns: cells</li>
 <li>rows: genes</li>
-<li>In our case, columns are cells and rows are markers
+<li>For <em>multiplex imaging data</em>:
 <ul>
-<li>assays contains mean/median expression values for each marker and each cell</li>
-<li>Generally we have mean at the total cell, membrane, and nuclei level. Do we want to store this data in wide form (all in the assays) or long form? I think wide.</li>
-<li>What types of assays would be useful for our data?
+<li>In our case, columns are cells and rows are markers</li>
+<li>Typically see 8-40 markers</li>
+<li>For Vectra data, get <code>min/max/mean/total/std dev</code> expression, measured at <code>membrane/nucleus/total cell</code>, for a total of 15 variables for each marker
 <ul>
-<li>Maybe an assay for nuclei, assay for total cells, assay for membrane?</li>
-<li>Ask Cole how he applies his method and what the data structure is</li>
+<li><strong>Right now all of these are stored within one assay. The mean marker at the total cell level is most commonly used. Do we want to put this in one assay and store the rest in a second assay?</strong></li>
 </ul></li>
 </ul></li>
 </ul></li>
@@ -290,32 +292,117 @@ div.tocify {
 <ul>
 <li>For us this is phenotype, tissue category, cell shape, cell min/max axis, etc</li>
 </ul></li>
-<li><code>spatialCoords</code>: stores spatial coordinates</li>
+<li><code>spatialData</code>: Dataframe of spatial variables
+<ul>
+<li><code>spatialCoords</code>: stores matrix of spatial coordinates</li>
+<li><code>in_tissue</code> argument: is pixel location tissue or slide? this can be determined from Vectra output.</li>
+</ul></li>
 <li><code>imgData</code>: contains image data. Our images might be too big for this.</li>
 </ul>
 </div>
-<div id="convert-txt-to-spe" class="section level2">
-<h2>Convert <code>txt</code> to <code>spe</code></h2>
-<p>I wrote a function called <code>readVectraTable.R</code> for converting Vectra <code>.txt</code> data to an <code>spe</code> object. You provide the function with a directory that has one or multiple <code>.txt</code> files from a Vectra instrument and combines into one <code>spe</code> object.</p>
-<ul>
-<li>Need to assess if I should change what is stored in <code>assays</code>.</li>
-</ul>
+<div id="convert-.txt-to-spe" class="section level2">
+<h2>Convert <code>.txt</code> to <code>spe</code></h2>
+<p>I wrote a function called <code>readVectraTable.R</code> for converting Vectra <code>.txt</code> data to an <code>spe</code> object. You provide the function with a directory that has one or multiple <code>.txt</code> or <code>.txt.zip</code> files from a Vectra instrument and combines into one <code>spe</code> object.</p>
 <div id="lung-cancer-data" class="section level3">
 <h3>Lung cancer data</h3>
-<p>This is a subset of the data from (Johnson et. al.)[<a href="https://www.semanticscholar.org/paper/Cancer-cell-specific-MHCII-expression-as-a-of-the-Johnson-Boland/310b4eb9d9fe2ec2254004e0780c4b722ba1fe5d" class="uri">https://www.semanticscholar.org/paper/Cancer-cell-specific-MHCII-expression-as-a-of-the-Johnson-Boland/310b4eb9d9fe2ec2254004e0780c4b722ba1fe5d</a>].</p>
+<p>These dataa are 5 images from one subject. This is a subset of the data from <a href="https://www.semanticscholar.org/paper/Cancer-cell-specific-MHCII-expression-as-a-of-the-Johnson-Boland/310b4eb9d9fe2ec2254004e0780c4b722ba1fe5d">Johnson et. al.</a> with 153 subjects and 3-5 images each.</p>
+<pre class="r"><code>library(tidyverse)
+library(SpatialExperiment)
+
+source(here::here(&quot;source&quot;, &quot;readVectraTable.R&quot;))
+
+
+spe = readVectraTable(sample_path = here::here(&quot;data&quot;, &quot;tabular&quot;),
+                clean_names = TRUE)</code></pre>
 </div>
 <div id="phenoptr-data" class="section level3">
 <h3>Phenoptr data</h3>
-<p>This data is available in the phenoptr package from Akoya Biosciences. Nine images taken from three samples of (also) lung cancer tissue.</p>
+<p>This data is available in the <a href="https://akoyabio.github.io/phenoptrExamples/index.html"><code>phenoptrExamples</code> package</a> from Akoya Biosciences. Nine images taken from three samples of (also) lung cancer tissue.</p>
+<pre class="r"><code>path &lt;- system.file(&quot;extdata&quot;, &quot;samples&quot;, package = &quot;phenoptrExamples&quot;)
+
+spe_phenoptr &lt;- readVectraTable(sample_path = path)</code></pre>
 </div>
 </div>
 <div id="downstream-analysis" class="section level2">
 <h2>Downstream Analysis</h2>
 <p>Do some downstream analysis already possible with the <code>SpatialExperiment</code> package.</p>
+<ul>
+<li>multiplex imaging experiments will typically have more cells and fewer rows (genes) than a spatial transcriptomics experiment</li>
+</ul>
+<pre class="r"><code>dim(spe_phenoptr)</code></pre>
+<pre><code>## [1]   128 54525</code></pre>
+<ul>
+<li><p>Right now we use <code>counts</code>, which is the same assay name as for ST objects. I propose “intensities” instead, and have potentially different slots for mean, std, min, etc.</p>
+<ul>
+<li>Otherwise, maybe we can make mean, min, max different gene id information instead? Like have a row ID column that is <code>stat_summary</code> and has values of min, mean, max, etc.</li>
+</ul></li>
+</ul>
+<pre class="r"><code>assayNames(spe)</code></pre>
+<pre><code>## [1] &quot;counts&quot;</code></pre>
+<ul>
+<li>Print out spatial data that is not the coordinates
+<ul>
+<li>What other variables might I want to put here?</li>
+</ul></li>
+</ul>
+<pre class="r"><code>head(spatialData(spe)) </code></pre>
+<pre><code>## DataFrame with 6 rows and 2 columns
+##   in_tissue distance_from_tissue_category_edge_microns
+##   &lt;numeric&gt;                                  &lt;numeric&gt;
+## 1         1                                         NA
+## 2         1                                         NA
+## 3         1                                         NA
+## 4         1                                         NA
+## 5         1                                         NA
+## 6         1                                         NA</code></pre>
+<ul>
+<li>Print out spatial coordinates</li>
+</ul>
+<pre class="r"><code>head(spatialCoords(spe))</code></pre>
+<pre><code>##      cell_x_position cell_y_position
+## [1,]           264.5             2.0
+## [2,]           298.0             1.5
+## [3,]           318.0             2.0
+## [4,]           347.5             2.0
+## [5,]           408.5             1.5
+## [6,]           556.5             2.0</code></pre>
+<div id="visualization" class="section level3">
+<h3>Visualization</h3>
+<p>Doesn’t work- why not?</p>
+<pre class="r"><code>library(ggspavis)
+plotSpots(spe)
+
+
+# example from vignette also doesn&#39;t work
+spe_test &lt;- SpatialExperiment(assay=mat, 
+                         spatialData=cd, 
+                         spatialCoordsNames=c(&quot;x&quot;, &quot;y&quot;))
+
+
+
+plotSpots(spe_test)</code></pre>
+</div>
+<div id="qc" class="section level3">
+<h3>QC</h3>
+<pre class="r"><code>library(scater)
+
+spe &lt;- spe[, spatialData(spe)$in_tissue == 1]
+dim(spe)</code></pre>
+<pre><code>## [1]   96 5701</code></pre>
+</div>
+<div id="my-downstream-analysis" class="section level3">
+<h3>My downstream analysis</h3>
+<ul>
+<li>Convert to cell populations in different areas (how to manipulate assays argument)</li>
+<li>Do log of mean expression values</li>
+<li>Would I need different methods? Which ones?</li>
+</ul>
+</div>
 </div>
 <div id="questions" class="section level2">
 <h2>Questions</h2>
 <ul>
+<li>Right now we use <code>counts</code>, which is the same assay name as for ST objects. Would we lose functionality if we change this to <code>intensities</code> or something like that?</li>
 <li>What if I want to add in clinical data?</li>
 <li>Do we need to call assay ‘counts’ or do we want to call it something else?</li>
 <li>What goes in <code>assays</code>? Min, mean, max, std dev, total all together or each as a separate assay?
@@ -323,20 +410,27 @@ div.tocify {
 <li>See how Cole uses this information</li>
 </ul></li>
 <li>Where are IDs stored? Does downstream manipulation seem to work?</li>
-<li>What is the unique image ID? Slide ID? Patient ID? are these consistent across Vectra datasets?</li>
+<li><code>ggspavis</code> doesn’t seem to be working for me. Why?</li>
 </ul>
 </div>
 <div id="to-do" class="section level2">
 <h2>To Do</h2>
 <ul>
-<li><p>Add rownames with subject-image-cell-id identifier</p></li>
-<li><p>Decide where to put “other” variables like distances, and nearest neighbor distances as well if calculated</p></li>
-<li><p>Add image data?</p></li>
-<li><p>Add examples with clinical data?</p></li>
-<li><p>We may need to convert area characteristics from pixels to microns</p>
+<li>Add rownames with subject-image-cell-id identifier</li>
+<li>Decide where to put “other” variables like distances, and nearest neighbor distances as well if calculated</li>
+</ul>
+<pre class="r"><code># put the distance from tissue category edge in spatial vars?
+# maybe another assay?
+other = c(&quot;Category Region ID&quot;, &quot;Distance from Tissue Category Edge (microns)&quot;,
+            )</code></pre>
+<ul>
+<li>Add image data?</li>
+<li>Add examples with clinical data?</li>
+<li>We may need to convert area characteristics from pixels to microns
 <ul>
 <li>See <code>phenoptr::read_cell_seg_data()</code> about this</li>
 </ul></li>
+<li>Build reference table for functional vs. surface vs immune marker types</li>
 </ul>
 <div id="images" class="section level3">
 <h3>Images</h3>
@@ -381,7 +475,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
+  window.initializeCodeFolding("show" === "show");
 });
 </script>
 

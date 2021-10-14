@@ -42,21 +42,28 @@ readVectraTable <- function(sample_path = "", # path to where one or multiple tx
     # will currently break if user specifies clean_names = FALSE
     if(clean_names){df = janitor::clean_names(df)}
 
+    # add "in_tissue" variable
+    df$in_tissue = ifelse(tolower(df$tissue_category) == "slide", 0, 1)
+
     # define variables for different slots
-    assay_vars = c(names(df)[grep(") min|max|mean|std_dev|total", names(df))]
+    assay_vars <- c(names(df)[grep(") min|max|mean|std_dev|total", names(df))]
     )
-    colData_vars = c("cell_id", "tissue_category", "slide_id",
+    colData_vars <- c("cell_id", "tissue_category", "slide_id",
                      names(df)[grep("area|phenotype|axis|compactness", names(df))] )
 
-    spatial_vars = c("cell_x_position", "cell_y_position" )
+    spatial_vars <- c("cell_x_position", "cell_y_position", "in_tissue",
+                      names(df)[grep("distance", names(df))])
+
+    spatialData <- subset(df, select = spatial_vars)
 
     # make into spe object
+    # what dims do the spatial need to be? Do I need to transpose?
     SpatialExperiment(
-      assays = list( counts = t(as.matrix(subset(df, select = assay_vars)))),
+      assays = list(counts = t(as.matrix(subset(df, select = assay_vars)))),
       sample_id = df$sample_name,
       colData = DataFrame(subset(df, select = colData_vars)),
-      spatialData=DataFrame(subset(df, select = spatial_vars)),
-      spatialCoordsNames = spatial_vars
+      spatialData=DataFrame(spatialData),
+      spatialCoordsNames = c("cell_x_position", "cell_y_position")
     )
   }) # end lapply
   spe <- do.call(cbind, spel)

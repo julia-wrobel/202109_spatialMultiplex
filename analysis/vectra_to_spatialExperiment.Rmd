@@ -3,7 +3,7 @@ title: "Converting Vectra data to spatialExperiment Objects"
 hitheme: tomorrow
 output:
   html_document:
-    code_folding: hide
+    code_folding: show
     toc: yes
     toc_float: yes
 highlighter: highlight.js
@@ -12,48 +12,50 @@ highlighter: highlight.js
 ```{r setup, include=FALSE}
 library(tidyverse)
 knitr::opts_chunk$set(echo = TRUE,
-                      include = FALSE)
+                      message = FALSE,
+                      warning = FALSE)
 ```
 
 ## Overview 
 
 This document provides info on how to convert Vectra data into a `spatialExperiment` object.
 
-* Should have conversion functions for `tiff` files and `.txt` tabular data
-
+* Should have conversion functions for `.tiff` files and `.txt` tabular data
+  * only `.txt` currently implemented
 
 ## Correspondence between ST and MI
 
-The `spatialExperiment` object has a particular structure. Here I explain the correspondence between `spatialExperiment` slots for typical ST data, and how we expect it to behave for MI data.
-
+Here I explain the correspondence between `spatialExperiment` slots for typical ST data, and how we expect it to behave for *multiplex imaging (MI) data.
 
 * `assays`: contains expression counts
   * columns: cells
   * rows: genes
-  * In our case, columns are cells and rows are markers
-    * assays contains mean/median expression values for each marker and each cell
-    * Generally we have mean at the total cell, membrane, and nuclei level. Do we want to store this data in wide form (all in the assays) or long form? I think wide.
-    * What types of assays would be useful for our data?
-      * Maybe an assay for nuclei, assay for total cells, assay for membrane?
-      * Ask Cole how he applies his method and what the data structure is
+  * For *multiplex imaging data*:
+    * In our case, columns are cells and rows are markers
+    * Typically see 8-40 markers
+    * For Vectra data, get `min/max/mean/total/std dev` expression, measured at `membrane/nucleus/total cell`, for a total of 15 variables for each marker
+      * **Right now all of these are stored within one assay. The mean marker at the total cell level is most commonly used. Do we want to put this in one assay and store the rest in a second assay?**
+    * In ST these are called `counts`, 
+      * for MI I kept them as `counts` but want to rename `intensities`. Will this break everything?
 * `rowData`: "feature metadata"
   * For us, this would contain information about markers... maybe marker type (phenotypic vs. functional)?
 * `colData`: contains info about cells
   * For us this is phenotype, tissue category, cell shape, cell min/max axis, etc
-* `spatialCoords`: stores spatial coordinates
+* `spatialData`: Dataframe of spatial variables
+  * `spatialCoords`: stores matrix of spatial coordinates
+  * `in_tissue` argument: is pixel location tissue or slide? this can be determined from Vectra output.
 * `imgData`: contains image data. Our images might be too big for this.
 
 
-## Convert `txt` to `spe`
+## Convert `.txt` to `spe`
 
 
-I wrote a function called `readVectraTable.R` for converting Vectra `.txt` data to an `spe` object. You provide the function with a directory that has one or multiple `.txt` files from a Vectra instrument and combines into one `spe` object.
+I wrote a function called `readVectraTable.R` for converting Vectra `.txt` data to an `spe` object. You provide the function with a directory that has one or multiple `.txt` or `.txt.zip` files from a Vectra instrument and combines into one `spe` object.
 
-* Need to assess if I should change what is stored in `assays`.
 
 ### Lung cancer data
 
-This is a subset of the data from [Johnson et. al.](https://www.semanticscholar.org/paper/Cancer-cell-specific-MHCII-expression-as-a-of-the-Johnson-Boland/310b4eb9d9fe2ec2254004e0780c4b722ba1fe5d).
+These data are 5 images from one subject. This is a subset of the data from [Johnson et. al.](https://www.semanticscholar.org/paper/Cancer-cell-specific-MHCII-expression-as-a-of-the-Johnson-Boland/310b4eb9d9fe2ec2254004e0780c4b722ba1fe5d) with 153 subjects and 3-5 images each.
 
 ```{r, echo = TRUE}
 library(tidyverse)
@@ -73,7 +75,7 @@ This data is available in the [`phenoptrExamples` package](https://akoyabio.gith
 ```{r}
 path <- system.file("extdata", "samples", package = "phenoptrExamples")
 
-spe_phenoptr = readVectraTable(sample_path = path)
+spe_phenoptr <- readVectraTable(sample_path = path)
 ```
 
 
@@ -81,32 +83,103 @@ spe_phenoptr = readVectraTable(sample_path = path)
 
 Do some downstream analysis already possible with the `SpatialExperiment` package.
 
+* multiplex imaging experiments will typically have more cells and fewer rows (genes) than a spatial transcriptomics experiment
+
+```{r}
+dim(spe_phenoptr)
+```
+
+
+```{r}
+assayNames(spe)
+```
+
+
+* Prints out spatial data that is not the coordinates
+  * What other variables might I want to put here?
+  
+  
+```{r}
+head(spatialData(spe)) 
+```
+
+* Print out spatial coordinates
+
+```{r}
+head(spatialCoords(spe))
+```
+
+### Visualization
+
+Doesn't work- why not?
+
+```{r, eval = FALSE}
+library(ggspavis)
+plotSpots(spe)
+
+
+# example from vignette also doesn't work
+spe_test <- SpatialExperiment(assay=mat, 
+                         spatialData=cd, 
+                         spatialCoordsNames=c("x", "y"))
+
+
+
+plotSpots(spe_test)
+```
+
+
+
+### QC
+
+```{r}
+library(scater)
+
+spe <- spe[, spatialData(spe)$in_tissue == 1]
+dim(spe)
+```
+
+
+
+```{r}
+library(scran)
+set.seed(123)
+qclus <- quickCluster(spe)
+table(qclus)
+
+spe <- computeSumFactors(spe, cluster = qclus)
+
+summary(sizeFactors(spe))
+
+spe <- logNormCounts(spe)
+```
+
+### My downstream analysis
+
+* Convert to  cell populations in different areas (how to manipulate assays argument)
+* Do log of mean expression values
+* Would I need different methods? Which ones?
+
 ## Questions
 
+* Right now we use `counts`, which is the same assay name as for ST objects. Would we lose functionality if we change this to `intensities` or something like that?
 * What if I want to add in clinical data?
 * Do we need to call assay 'counts' or do we want to call it something else?
 * What goes in `assays`? Min, mean, max, std dev, total all together or each as a separate assay?
   * See how Cole uses this information
 * Where are IDs stored? Does downstream manipulation seem to work?
-* What is the unique image ID? Slide ID? Patient ID? are these consistent across Vectra datasets?   
+* `ggspavis` doesn't seem to be working for me. Why?
+
 
 ## To Do
 
 * Add rownames with subject-image-cell-id identifier
-* Decide where to put "other" variables like distances, and nearest neighbor distances as well if calculated
-
-```{r, echo = TRUE, eval = FALSE}
-# put the distance from tissue category edge in spatial vars?
-# maybe another assay?
-other = c("Category Region ID", "Distance from Tissue Category Edge (microns)",
-            )
-```
-
 * Add image data?
 * Add examples with clinical data?
 * We may need to convert area characteristics from pixels to microns
   * See `phenoptr::read_cell_seg_data()` about this
-  
+* Build reference table for functional vs. surface vs immune marker types
+* Make compatible with Cole's normalization. Add as new normalized assay?
 
 ### Images
 

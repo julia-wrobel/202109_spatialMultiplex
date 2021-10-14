@@ -11,21 +11,38 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## To do
 
+
+### Reading 
+
 * Learn about `spatialExperiment` 
   * Go through [this textbook](https://lmweber.org/OSTA-book/spatialexperiment.html)
-  * Chapter 7
   * Chapter 8
   * Read [bioarxiv paper](https://www.biorxiv.org/content/10.1101/2021.01.27.428431v2)
   * Check out workshops from last bioconductor conference [here](https://lmweber.org/OSTAWorkshopBioc2021/), [here](https://drighelli.github.io/SpatialExperiment_Bioc2021/index.html)
-  
+
+
+### MI to ST conversion
+
 * Make Vectra compatible with `spatialExperiment`
-  * Check out `read10xVisium()` function, which creates a SpatialExperiment object from the raw input files expected from the 10x Genomics processing software ([link](https://github.com/drighelli/SpatialExperiment/blob/master/R/read10xVisium.R))
-  * Write function for tabular data
   * Determine slot/structure for adding clinical data
+  * Determine what goes in `rowData` slot. Potentially create a lookup table for types of popular markers and :
+    * whether they are surface/nucleour/phenotypic/membrane
+    * what types of cells they tend to mark
   * Write function for image data
     * Each pixel is a row?
     * If segmentation is defined, write function for extracting cells and putting into table format
-  
+    
+* Data 
+  * TNBC MIBI data
+  * Put Simon's mIF data in `data` folder
+    * Do brief exploratory analysis
+    * Add this data to datasets document
+    * Work towards making this compatible with Spatial Experiment
+
+ 
+    
+### Data package   
+
 * Explore `ExperimentData` packages on Bioconductor
   * Check out [ST example data](https://bioconductor.org/packages/devel/data/experiment/html/STexampleData.html)
   * Check out [JP's](https://bioconductor.org/packages/3.13/data/experiment/html/ARRmData.html)
@@ -34,14 +51,7 @@ knitr::opts_chunk$set(echo = TRUE)
   * Think about which dataset you would want to turn into a package
   * Go through [guidelines](https://bioconductor.org/packages/release/bioc/vignettes/AnnotationHub/inst/doc/CreateAHubPackage.html) on how to create ExperimentHub package
 
-* Data
-  * TNBC MIBI data
-  * Put Simon's mIF data in `data` folder
-    * Do brief exploratory analysis
-    * Add this data to datasets document
-    * Work towards making this compatible with Spatial Experiment
-
- 
+### Other
 
 * CRAN task view on single cell imaging data
   * http://bioconductor.org/packages/release/bioc/html/pRoloc.html
@@ -57,7 +67,13 @@ knitr::opts_chunk$set(echo = TRUE)
   * Chapter 4
   * Chapter 5
   * Chapter 6
+  * Chapter 7
  
+* Make Vectra compatible with `spatialExperiment`
+  * Check out `read10xVisium()` function, which creates a SpatialExperiment object from the raw input files expected from the 10x Genomics processing software ([link](https://github.com/drighelli/SpatialExperiment/blob/master/R/read10xVisium.R))
+  * Write function for tabular data
+  
+    
 ## Ideas
 
 * `MultiplexUtils` package to store the multiplex conversion functions?
