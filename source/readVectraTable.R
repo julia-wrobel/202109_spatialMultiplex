@@ -46,6 +46,8 @@ readVectraTable <- function(sample_path = "", # path to where one or multiple tx
     df$in_tissue = ifelse(tolower(df$tissue_category) == "slide", 0, 1)
 
     # define variables for different slots
+    # this is where I want to edit
+      # add in two assays: main, and everything else
     assay_vars <- c(names(df)[grep(") min|max|mean|std_dev|total", names(df))]
     )
     colData_vars <- c("cell_id", "tissue_category", "slide_id",
@@ -57,7 +59,6 @@ readVectraTable <- function(sample_path = "", # path to where one or multiple tx
     spatialData <- subset(df, select = spatial_vars)
 
     # make into spe object
-    # what dims do the spatial need to be? Do I need to transpose?
     SpatialExperiment(
       assays = list(counts = t(as.matrix(subset(df, select = assay_vars)))),
       sample_id = df$sample_name,

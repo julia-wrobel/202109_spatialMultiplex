@@ -12,15 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ## To do
 
 
-### Reading 
-
-* Learn about `spatialExperiment` 
-  * Go through [this textbook](https://lmweber.org/OSTA-book/spatialexperiment.html)
-  * Chapter 8
-  * Read [bioarxiv paper](https://www.biorxiv.org/content/10.1101/2021.01.27.428431v2)
-  * Check out workshops from last bioconductor conference [here](https://lmweber.org/OSTAWorkshopBioc2021/), [here](https://drighelli.github.io/SpatialExperiment_Bioc2021/index.html)
-
-
 ### MI to ST conversion
 
 * Make Vectra compatible with `spatialExperiment`
@@ -33,12 +24,8 @@ knitr::opts_chunk$set(echo = TRUE)
     * If segmentation is defined, write function for extracting cells and putting into table format
     
 * Data 
-  * TNBC MIBI data
-  * Put Simon's mIF data in `data` folder
-    * Do brief exploratory analysis
-    * Add this data to datasets document
-    * Work towards making this compatible with Spatial Experiment
-
+  * Vectra 3 lung cancer data
+  * Vectra Polaris ovarian cancer data
  
     
 ### Data package   
@@ -51,47 +38,6 @@ knitr::opts_chunk$set(echo = TRUE)
   * Think about which dataset you would want to turn into a package
   * Go through [guidelines](https://bioconductor.org/packages/release/bioc/vignettes/AnnotationHub/inst/doc/CreateAHubPackage.html) on how to create ExperimentHub package
 
-### Other
-
-* CRAN task view on single cell imaging data
-  * http://bioconductor.org/packages/release/bioc/html/pRoloc.html
-  * https://cran.r-project.org/web/packages/spatialTIME/index.html
-
-## Recently completed
-
-* Learn about `spatialExperiment` 
-  * Go through [this textbook](https://lmweber.org/OSTA-book/spatialexperiment.html)
-  * Chapter 1
-  * Chapter 2
-  * Chapter 3
-  * Chapter 4
-  * Chapter 5
-  * Chapter 6
-  * Chapter 7
- 
-* Make Vectra compatible with `spatialExperiment`
-  * Check out `read10xVisium()` function, which creates a SpatialExperiment object from the raw input files expected from the 10x Genomics processing software ([link](https://github.com/drighelli/SpatialExperiment/blob/master/R/read10xVisium.R))
-  * Write function for tabular data
-  
-    
-## Ideas
-
-* `MultiplexUtils` package to store the multiplex conversion functions?
-* Call multiplex data package MIexampleData
-
-## Ongoing questions
-
-* Types of Bioconductor packages include: analysis software packages, annotation packages, data packages, workflow packages, online books
-  * What are each of these?
-  * Is `spatialExperiment` a workflow package?
-* When creating a data package, would it be best to have data from one platform (just Vectra) or from multiple platforms?
-  * Contains Visium and seqFISH data
-* What software do you use to make the pretty figures?
-* Why is `spatialCoords` its own slot rather than being a `colData` variable? is this because it was built on top of `singleCellExperiment`? Does having its own slot add functionality?
-* Did you (Lukas) right the whole spatial transcriptomics book yourself?
-  * Including the preprocessing steps section?
-* What is the purpose of the `DropletUtils` package? What is Droplet data?
-
 ### About spatial transcriptomics
 
 * Can `VistoSeg` be used to count/summarize the pixels in a cell?
@@ -103,11 +49,6 @@ knitr::opts_chunk$set(echo = TRUE)
   * ST has counts and MI has continuous marker intensities
     * Are there "intensities" at all for ST?
 
-### About read10xVisium.R
-
-* Is it ok for the image data argument to be empty?
-* Does it all the types of files at once?
-  * Can you explain the expected file structure a little bit?
 
 ### Angie questions
 

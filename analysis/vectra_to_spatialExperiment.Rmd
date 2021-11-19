@@ -86,7 +86,7 @@ Do some downstream analysis already possible with the `SpatialExperiment` packag
 * multiplex imaging experiments will typically have more cells and fewer rows (genes) than a spatial transcriptomics experiment
 
 ```{r}
-dim(spe_phenoptr)
+dim(spe)
 ```
 
 
@@ -163,23 +163,43 @@ spe <- logNormCounts(spe)
 ## Questions
 
 * Right now we use `counts`, which is the same assay name as for ST objects. Would we lose functionality if we change this to `intensities` or something like that?
-* What if I want to add in clinical data?
-* Do we need to call assay 'counts' or do we want to call it something else?
-* What goes in `assays`? Min, mean, max, std dev, total all together or each as a separate assay?
-  * See how Cole uses this information
-* Where are IDs stored? Does downstream manipulation seem to work?
-* `ggspavis` doesn't seem to be working for me. Why?
+* What if I want to add in clinical data? Metadata data frame (hdcytodata)
+* How do I want to organize `assays`? 
+  * Min, mean, max, std dev, total all together or each as a separate assay?
+  * cell, membrane, total all together or each as a separate assay?
+  * the main assay object (counts) wouldn't be high dimensional, which is ok
+* Not currently supporting storage of raw images- do you think this is fine? (What is the size?)
+  * Downsampled images?
+
+
+**Uploading Data to S3**
+
+STExampleData- recently uploaded, has metadata scripts
+* I already got access- what form should the data be in? An `RData` object?
+  * Otherwise, could upload whole directory of data and do the processing as part of an annotation package
+* devel version of Bioconductor bioc
 
 
 ## To Do
 
 * Add rownames with subject-image-cell-id identifier
 * Add image data?
-* Add examples with clinical data?
 * We may need to convert area characteristics from pixels to microns
   * See `phenoptr::read_cell_seg_data()` about this
 * Build reference table for functional vs. surface vs immune marker types
 * Make compatible with Cole's normalization. Add as new normalized assay?
+* Add clinical data
+
+### Methods
+
+What methods will we want to make specifically for MI data?
+
+* Normalization method based on Cole's package
+  * `logNormCounts` (`scuttle` package) interacts with `SingleCellExperiment` object and adds a new assay to the object. We want something that functions similarly.
+* Cell type summaries (does this already exist for `SingleCellExperiment`?)
+* Nearest neighbor distances
+* Distances to tissue area boundaries
+* Moran's I, etc
 
 ### Images
 
