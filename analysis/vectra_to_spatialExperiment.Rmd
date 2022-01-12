@@ -186,6 +186,7 @@ STExampleData- recently uploaded, has metadata scripts
 * Add image data?
 * We may need to convert area characteristics from pixels to microns
   * See `phenoptr::read_cell_seg_data()` about this
+  * remove dependency with phenoptr package by digging into what this function is doing
 * Build reference table for functional vs. surface vs immune marker types
 * Make compatible with Cole's normalization. Add as new normalized assay?
 * Add clinical data

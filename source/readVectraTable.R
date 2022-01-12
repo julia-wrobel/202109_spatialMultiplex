@@ -19,8 +19,7 @@
 
 ## samples should point to a directory with one or multiple txt files
 readVectraTable <- function(sample_path = "", # path to where one or multiple txt files stored
-                            clean_names = TRUE, # convert colnames to snakecase
-                            marker_types = NULL # match table for marker types (i.e. phenotypic vs. functional)
+                            clean_names = TRUE # convert colnames to snakecase
                             ){
 
   # get file names
@@ -45,22 +44,39 @@ readVectraTable <- function(sample_path = "", # path to where one or multiple tx
     # add "in_tissue" variable
     df$in_tissue = ifelse(tolower(df$tissue_category) == "slide", 0, 1)
 
-    # define variables for different slots
-    # this is where I want to edit
-      # add in two assays: main, and everything else
-    assay_vars <- c(names(df)[grep(") min|max|mean|std_dev|total", names(df))]
-    )
+    # define matrices for assays. All assays have same rownames
+    intensities_assay <- t(as.matrix(subset(df, select = names(df)[intersect(grep("entire_cell", names(df)), grep("_mean", names(df)))])))
+    rownames(intensities_assay) <- substr(rownames(intensities_assay), start = 13, stop = nchar(rownames(intensities_assay))-5)
+
+    nucleus_assay <- t(as.matrix(subset(df, select = names(df)[intersect(grep("nucleus", names(df)), grep("_mean", names(df)))])))
+    rownames(nucleus_assay) <- substr(rownames(nucleus_assay), start = 9, stop = nchar(rownames(nucleus_assay))-5)
+
+    membrane_assay <- t(as.matrix(subset(df, select = names(df)[intersect(grep("membrane", names(df)), grep("_mean", names(df)))])))
+    rownames(membrane_assay) <- substr(rownames(membrane_assay), start = 10, stop = nchar(rownames(membrane_assay))-5)
+
+
+
+    ###### add check that each assay has same number of variables
+    ###### add check that variable names are in the same order
+
+    ## define variables for different slots
+    # stat summaries of marker intensities including standard deviation, min, max, and total go into colData
     colData_vars <- c("cell_id", "tissue_category", "slide_id",
-                     names(df)[grep("area|phenotype|axis|compactness", names(df))] )
+                     names(df)[grep("area|phenotype|axis|compactness|min|max|std_dev|total", names(df))] )
 
     spatial_vars <- c("cell_x_position", "cell_y_position", "in_tissue",
                       names(df)[grep("distance", names(df))])
 
     spatialData <- subset(df, select = spatial_vars)
 
+
+
+
     # make into spe object
     SpatialExperiment(
-      assays = list(counts = t(as.matrix(subset(df, select = assay_vars)))),
+      assays = list(intensities = intensities_assay,
+                    nucleus_intensities = nucleus_assay,
+                    membrane_intensities = membrane_assay),
       sample_id = df$sample_name,
       colData = DataFrame(subset(df, select = colData_vars)),
       spatialData=DataFrame(spatialData),
